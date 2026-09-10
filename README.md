@@ -1,73 +1,146 @@
 
-# Getting Started with Create React App
+# 🏢 منصة إدارة الشركات ولوحة التحكم (Admin & Company Dashboard)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+مشروع متكامل لنظام التوظيف وإدارة الشركات ولوحة التحكم الإدارية، يجمع بين **واجهة أمامية تفاعلية غنية (React + TypeScript)** تضم 16 شاشة لإدارة النظام والشركات والمتقدمين، و**خادم واجهات برمجية (Node.js / Express API)** متصل بقاعدة بيانات MongoDB.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 📁 هيكلية المشروع الموحدة (Project Structure)
 
-### `npm start`
+تم ترتيب هيكل المشروع وفصل الواجهة الأمامية عن الواجهة الخلفية لتتوافق تماماً مع المعيار الموحد للمشروع وفروعه الأخرى:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```text
+CV/
+├── backend/                       # خادم Node.js / Express والواجهات البرمجية
+│   ├── config/                    # إعدادات الاتصال بقاعدة البيانات (db.js)
+│   ├── data/                      # بيانات الشركات الأولية (company-data.json)
+│   ├── .env                       # متغيرات البيئة (PORT, MONGO_URI)
+│   ├── package.json               # حزم ومكتبات السيرفر
+│   └── server.js                  # خادم الـ API والمسارات المتكاملة (Port 5000)
+│
+├── frontend/                      # لوحة التحكم وإدارة الشركات (React 19 + TypeScript)
+│   ├── public/                    # الملفات الثابتة والأيقونات (index.html, manifest)
+│   ├── src/                       # الكود المصدري للواجهة
+│   │   ├── components/            # مكونات الرسوم البيانية والإحصائيات (Nivo Charts)
+│   │   │   ├── BarChart.tsx       # رسم بياني بالأعمدة
+│   │   │   ├── LineChart.tsx      # رسم بياني خطي
+│   │   │   ├── PieChart.tsx       # رسم بياني دائري
+│   │   │   ├── GeographyChart.tsx # خريطة جغرافية للبيانات
+│   │   │   ├── StatBox.tsx        # بطاقة إحصائية للمؤشرات
+│   │   │   ├── ProgressCircle.tsx # مؤشر تقدم دائري
+│   │   │   └── header.tsx         # ترويسة وعناوين الصفحات
+│   │   ├── scenes/                # شاشات النظام الـ 16
+│   │   │   ├── login/             # صفحة تسجيل الدخول (Admin & Company)
+│   │   │   ├── dashboard/         # الشاشة الرئيسية والإحصائيات
+│   │   │   │   └── global/        # القائمة الجانبية (Sidebar) وشريط التنقل (Topbar)
+│   │   │   ├── companies/         # استعراض دليل الشركات والبحث
+│   │   │   ├── companyDashboard/  # لوحة تحكم الشركة والوظائف المنشورة
+│   │   │   ├── companyDetails/    # الملف التعريفي للشركة والشواغر
+│   │   │   ├── applicants/        # استعراض وإدارة طلبات المتقدمين للوظائف
+│   │   │   ├── team/              # إدارة فريق العمل والأعضاء والصلاحيات
+│   │   │   ├── contacts/          # سجل جهات الاتصال
+│   │   │   ├── invoices/          # الفواتير والمعاملات المالية
+│   │   │   ├── Form/              # نموذج إضافة مستخدم جديد (Formik + Yup)
+│   │   │   ├── calendar/          # تقويم الأحداث والمواعيد التفاعلي (FullCalendar)
+│   │   │   └── FAQ/               # صفحة الأسئلة الشائعة
+│   │   ├── data/                  # البيانات الوهمية للمحاكاة (Mock Data)
+│   │   ├── App.tsx                # المكون الرئيسي وتوجيه المسارات (Routing)
+│   │   ├── index.tsx              # نقطة بداية التطبيق
+│   │   └── theme.ts               # إدارة السمات (Dark / Light Mode) ومصفوفة الألوان
+│   ├── package.json               # حزم ومكتبات الواجهة (MUI, Nivo, Router, FullCalendar)
+│   └── tsconfig.json              # إعدادات مترجم TypeScript
+│
+├── .gitignore                     # القواعد الشاملة لتجاهل الملفات ومجلدات node_modules
+└── README.md                      # الدليل الشامل للهيكلية والتشغيل والدمج
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 🎨 مميزات الواجهة الأمامية (Frontend)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **نظام تسجيل الدخول والصلاحيات:** شاشة تسجيل دخول مخصصة للأدمن والشركات (`/login`).
+- **بوابة الشركات والمتقدمين:**
+  - عرض شبكة الشركات وتفاصيل كل شركة والوظائف المتاحة.
+  - لوحة تحكم خاصة بالشركات لمتابعة الأداء وإدارة الشواغر.
+  - إدارة المتقدمين ومراجعة السير الذاتية وحالات التقديم.
+- **نظام الرسوم البيانية المتطورة (Nivo Charts):** رسوم بيانية تفاعلية (Bar, Line, Pie, Geo Map).
+- **جداول بيانات تفاعلية (MUI X DataGrid):** فرز وبحث وتصفية متقدمة لبيانات الفريق والعملاء والفواتير.
+- **تقويم تفاعلي كامل (FullCalendar):** لحفظ المواعيد وإدارة جدول المقابلات والأحداث.
+- **دعم كامل للوضعين الداكن والفاتح (Dark / Light Mode):** تخصيص ألوان كامل لراحة المستخدم.
 
-### `npm run build`
+### 🚀 تشغيل الواجهة الأمامية:
+```bash
+cd frontend
+npm install
+npm start
+```
+*يفتح التطبيق تلقائياً على: `http://localhost:3000`*
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## ⚙️ الواجهة الخلفية (Backend API)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+خادم Express متكامل يقدم واجهات برمجية مرتبطة بقاعدة بيانات MongoDB:
 
-### `npm run eject`
+| المسار (Endpoint) | الطريقة | الوصف |
+|-------------------|---------|-------|
+| `/api/login` | `POST` | تسجيل دخول المستخدمين (أدمن / شركات) |
+| `/api/team` | `GET` | قائمة أعضاء فريق العمل والصلاحيات |
+| `/api/contacts` | `GET` | قائمة جهات الاتصال |
+| `/api/events` | `GET` / `POST` | جلب وإضافة المواعيد والأحداث في التقويم |
+| `/api/companies` | `GET` / `POST` | استعراض وإضافة الشركات |
+| `/api/companies/:id` | `GET` | تفاصيل شركة محددة وشواغرها |
+| `/api/applicants` | `GET` / `POST` | جلب وإضافة طلبات التقديم على الوظائف |
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 🚀 تشغيل السيرفر:
+```bash
+cd backend
+npm install
+npm start
+```
+*يعمل السيرفر على المنفذ: `http://localhost:5000`*
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 🔑 متغيرات البيئة (`backend/.env`)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```env
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/job-platform
+```
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🔀 دليل دمج الأكواد مع الفروع الأخرى (Git Merge Guide)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+بعد إعادة هيكلة فرع `Sura` وتوحيده ضمن مجلد `frontend/` و `backend/`:
 
-### Code Splitting
+### 1. حفظ التغييرات الحالية في الفرع:
+```bash
+git add .
+git commit -m "Refactor Sura branch: organize frontend into frontend/, clean node_modules from git, and update README"
+git push origin Sura
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### 2. الدمج مع فرع `NadaNour`:
+فرع `NadaNour` يحتوي على الهيكلية المطابقة مع إضافات نظام المسائل البرمجية (NeetCode):
+```bash
+git fetch origin
+git merge origin/NadaNour
+```
+*سيتم دمج شاشات إسراء (Login, Companies, Applicants) مع نظام التقييم البرمجي لندى نور في نفس المشروع بدون تعارضات هيكلية.*
 
-### Analyzing the Bundle Size
+### 3. الدمج مع الفرع الموحد `origin/WaseemMohammed`:
+فرع وسيم يتبع نفس تقسيم `backend/` و `frontend/`:
+```bash
+git fetch origin
+git merge origin/WaseemMohammed
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## 👥 المساهمون
+- **Sura** - تطوير شاشات الشركات والمتقدمين وتسجيل الدخول وتكامل السيرفر.
+- **Nada Nour** - تطوير لوحة التحكم ونظام التقييم البرمجي.
+- **فريق منصة التوظيف (Foras Palestine / TTWAR).**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-
-# CV
