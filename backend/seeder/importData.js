@@ -1,13 +1,25 @@
 const mongoose = require('mongoose');
 const path = require('path');
-const dotenv = require('dotenv');
+const fs = require('fs');
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const Problem = require('../models/Problem');
 
-const codingProblems = require(path.resolve(__dirname, '../../data/problems_youseef.json'));
-const quizQuestions  = require(path.resolve(__dirname, '../../data/tech_questions.json'));
+const resolveDataFile = (fileName) => {
+  const candidates = [
+    path.resolve(__dirname, '../../data', fileName),
+    path.resolve(__dirname, '../data', fileName),
+    path.resolve('/app/data', fileName)
+  ];
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) return candidate;
+  }
+  return path.resolve(__dirname, '../../data', fileName);
+};
+
+const codingProblems = require(resolveDataFile('problems_youseef.json'));
+const quizQuestions  = require(resolveDataFile('tech_questions.json'));
 
 const importData = async () => {
   try {

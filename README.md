@@ -1,73 +1,162 @@
 
-# Getting Started with Create React App
+# 💼 منصة التوظيف والتقييم البرمجي (Job & Evaluation Platform)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+مشروع متكامل يجمع بين **لوحة تحكم إدارية تفاعلية (Admin Dashboard)**، و**نظام تقييم وحل مسائل برمجية (NeetCode/LeetCode Evaluation Engine)**، و**خادم واجهات برمجية (Backend API)** لإدارة الوظائف والمستخدمين والشركات والتقديمات.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 📁 هيكلية المشروع الموحدة (Project Structure)
 
-### `npm start`
+تم تنظيم المشروع وفصل الواجهة الأمامية عن الواجهة الخلفية وقاعدة البيانات لتسهيل التطوير والدمج المباشر مع فروع الفريق:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```text
+CV/
+├── backend/                       # خادم Node.js / Express وخدمات تقييم الأكواد
+│   ├── config/                    # إعدادات قاعدة البيانات والتكوين
+│   ├── controllers/               # معالجة منطق الطلبات (Submissions, etc.)
+│   ├── models/                    # نماذج MongoDB (Problem, etc.)
+│   ├── routes/                    # مسارات API (/api/problems, /api/submissions)
+│   ├── scripts/                   # سكربتات مساعدة لترحيل واستيراد البيانات
+│   ├── seeder/                    # استيراد بنك الأسئلة والمسائل
+│   │   └── importData.js          # سكربت تعبئة وتحديث البيانات (Bulk Upsert)
+│   ├── services/                  # خدمات المعالجة والـ Sandbox (compilerService)
+│   ├── .env                       # متغيرات البيئة الخاصة بالسيرفر
+│   ├── Dockerfile                 # إعداد تشغيل الخادم كحاوية Docker
+│   ├── docker-compose.yml         # تشغيل Mongo + Server + Seeder بضغطة زر
+│   ├── package.json               # حزم ومكتبات الخادم
+│   └── server.js                  # نقطة انطلاق الخادم (Port 5000)
+│
+├── frontend/                      # لوحة التحكم الإدارية (React + TypeScript)
+│   ├── public/                    # الملفات الثابتة والأيقونات (index.html, manifest)
+│   ├── src/                       # الكود المصدري للواجهة
+│   │   ├── components/            # مكونات الرسوم البيانية والمؤشرات (Nivo Charts)
+│   │   │   ├── BarChart.tsx       # رسم بياني بالأعمدة
+│   │   │   ├── LineChart.tsx      # رسم بياني خطي
+│   │   │   ├── PieChart.tsx       # رسم بياني دائري
+│   │   │   ├── GeographyChart.tsx # خريطة جغرافية للبيانات
+│   │   │   ├── StatBox.tsx        # بطاقة إحصائية
+│   │   │   ├── ProgressCircle.tsx # دائرة تقدم الإنجاز
+│   │   │   └── header.tsx         # ترويسة الصفحات والعناوين
+│   │   ├── scenes/                # شاشات لوحة التحكم
+│   │   │   ├── dashboard/         # الشاشة الرئيسية والإحصائيات
+│   │   │   │   └── global/        # القائمة الجانبية (Sidebar) وشريط التنقل (Topbar)
+│   │   │   ├── team/              # إدارة فريق العمل والصلاحيات (DataGrid)
+│   │   │   ├── contacts/          # قائمة جهات الاتصال وبياناتهم
+│   │   │   ├── invoices/          # الفواتير والمعاملات المالية
+│   │   │   ├── Form/              # نموذج إضافة مستخدم جديد (Formik + Yup)
+│   │   │   ├── calendar/          # تقويم الأحداث والمواعيد (FullCalendar)
+│   │   │   └── FAQ/               # صفحة الأسئلة الشائعة
+│   │   ├── data/                  # البيانات الوهمية والمحاكاة (Mock Data)
+│   │   ├── App.tsx                # المكون الرئيسي ومسارات التنقل (Routing)
+│   │   ├── index.tsx              # نقطة مدخل تطبيق React
+│   │   └── theme.ts               # إدارة السمات (Dark / Light Mode) ومصفوفة الألوان
+│   ├── package.json               # حزم ومكتبات الواجهة (MUI, Nivo, Router, etc.)
+│   └── tsconfig.json              # إعدادات مترجم TypeScript
+│
+├── data/                          # بنك البيانات المرجعي (JSON Datasets)
+│   ├── problems_youseef.json      # بنك المسائل البرمجية (LeetCode/NeetCode style)
+│   └── tech_questions.json        # بنك الأسئلة التقنية والاختبارات (Quizzes)
+│
+├── .gitignore                     # قواعد استبعاد الملفات وتجاهل node_modules
+└── README.md                      # التوثيق الشامل لهيكلية وتشغيل المشروع
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 🎨 الواجهة الأمامية (Frontend - Admin Dashboard)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+لوحة تحكم إدارية مبنية باستخدام **React 19** و **TypeScript** ومكتبة **Material-UI (MUI)** وتدعم:
+- **نظام السمات المتقدم (Dark / Light Mode)** مع لوحة ألوان مخصصة مبنية على درجات الرمادي والأخضر والأزرق (`theme.ts`).
+- **رسوم بيانية تفاعلية وغنية (Nivo Charts):** رسوم بيانية للأعمدة، والخطوط، والدوائر، والخرائط الجغرافية لتتبع الأداء وتوزيع المستخدمين.
+- **إدارة البيانات والجداول المتقدمة (MUI X DataGrid):** عرض وتصفية بيانات الفرق وجهات الاتصال والفواتير.
+- **نماذج الإدخال والتحقق (Formik & Yup):** معالجة نماذج المستخدمين مع تحقق فوري من صحة البيانات.
+- **تقويم المواعيد التفاعلي (FullCalendar):** لإضافة وجدولة الأحداث والمواعيد.
 
-### `npm run build`
+### تشغيل الواجهة الأمامية:
+```bash
+cd frontend
+npm install
+npm start
+```
+*يفتح التطبيق افتراضياً على: `http://localhost:3000`*
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## ⚙️ الواجهة الخلفية (Backend - API & Compiler)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+مبنية باستخدام **Node.js** و **Express 5** و **MongoDB (Mongoose)**، وتوفر:
+1. **بنك المسائل والأسئلة (`/api/problems`):**
+   - استرجاع المسائل البرمجية حسب الصعوبة (`Easy`, `Medium`, `Hard`) والتصنيف (`category`).
+   - استرجاع أسئلة الاختبارات التقنية (`quiz`).
+2. **محرك فحص وتشغيل الشيفرة البرمجية (`/api/submissions`):**
+   - تنفيذ الأكواد البرمجية داخل بيئة معزولة وآمنة (Sandbox) باستخدام مكتبة `vm2`.
+3. **نظام استيراد البيانات الذكي (Data Seeder):**
+   - قراءة أكثر من 30,000 سطر من البيانات من مجلد `data/` وإدخالها أو تحديثها (`bulkWrite` / `upsert`) لمنع تكرار البيانات.
 
-### `npm run eject`
+### تشغيل السيرفر محلياً:
+```bash
+cd backend
+npm install
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+# استيراد وتعبئة بنك المسائل والأسئلة في قاعدة البيانات:
+npm run seed
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# تشغيل الخادم في وضع الإنتاج/التطوير:
+npm start
+```
+*يعمل السيرفر افتراضياً على: `http://localhost:5000`*
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### تشغيل السيرفر عبر Docker:
+```bash
+cd backend
+# تشغيل خادم MongoDB والخادم معاً:
+docker-compose up -d mongo backend
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+# تشغيل عملية استيراد البيانات (Seeder):
+docker-compose --profile seed up seeder
+```
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🔑 متغيرات البيئة (Environment Variables)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+داخل مجلد `backend/.env`:
+```env
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/job-platform
+JWT_SECRET=your_jwt_secret_key
+```
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 🔀 دليل دمج الأكواد مع الفروع الأخرى (Git Merge Guide)
 
-### Analyzing the Bundle Size
+بعد تنظيم المشروع بفصل `frontend` و `backend` وإزالة `node_modules` والروابط المعطوبة من Git، أصبح الدمج مع أي فرع من فروع الفريق آمناً وسهلاً للغاية:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### 1. حفظ التغييرات الحالية في الفرع:
+```bash
+git add .
+git commit -m "Refactor project structure into clean frontend and backend directories and add comprehensive README"
+git push origin NadaNour
+```
 
-### Making a Progressive Web App
+### 2. الدمج مع فرع موحد مثل `origin/WaseemMohammed`:
+فرع `WaseemMohammed` يحتوي بالفعل على مجلد `backend/` و `frontend/` موحدين:
+```bash
+# جلب آخر التحديثات من المستودع
+git fetch origin
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+# دمج التحديثات
+git merge origin/WaseemMohammed
+```
+*لن يحدث أي تعارض هيكلي لأن المجلدين أصبحا متطابقين في التسمية والتقسيم.*
 
-### Advanced Configuration
+### 3. الدمج مع فرع الزميلة `origin/Sura`:
+فرع `Sura` يحتوي على عمل مكمل للوحة التحكم. إذا أردت دمج شاشات إضافية تم تطويرها في ذلك الفرع:
+- بعد جلب الفرع، يمكن دمج شاشات `src/scenes` الجديدة إلى داخل `frontend/src/scenes`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-
-# CV
+## 👥 المساهمون
+- **Nada Nour** - تطوير لوحة التحكم الإدارية (Admin Dashboard) ونظام المسائل البرمجية (NeetCode Problem Engine).
+- **فريق مشروع المنصة (Foras Palestine / TTWAR).**
