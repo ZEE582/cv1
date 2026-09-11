@@ -1,4 +1,4 @@
-﻿# Dependencies
+# Dependencies (root, backend, frontend)
 node_modules/
 **/node_modules/
 .pnp
