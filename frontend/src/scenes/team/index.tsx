@@ -1,36 +1,93 @@
-import { Box, Typography, useTheme } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { tokens } from "../../theme";
+import { Box, Typography } from "@mui/material";
 import Header from "../../components/header";
-import { mockDataTeam } from "../../data/src/data/mockData";
+import { useEffect, useState } from "react";
 
-const Team: React.FC = () => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
+type TeamMember = {
+  id: number;
+  name: string;
+  age: number;
+  phone: string;
+  email: string;
+  access: string;
+  role: string;
+  image: string;
+};
 
-  const columns: GridColDef[] = [
-    { field: "id", headerName: "ID" },
-    { field: "name", headerName: "Name", flex: 1 },
-    { field: "age", headerName: "Age", type: "number" },
-    { field: "phone", headerName: "Phone", flex: 1 },
-    { field: "email", headerName: "Email", flex: 1 },
-    {
-      field: "access",
-      headerName: "Access",
-      flex: 1,
-      renderCell: (params) => (
-        <Typography color={colors.greenAccent[500]}>
-          {params.value}
-        </Typography>
-      ),
-    },
-  ];
+const Team = () => {
+  const [team, setTeam] = useState<TeamMember[]>([]);
+
+  useEffect(() => {
+    fetch("http://localhost:5001/team")
+      .then((res) => res.json())
+      .then((data) => setTeam(data))
+      .catch((err) => console.log(err));
+  }, []);
 
   return (
     <Box m="20px">
-      <Header title="TEAM" subtitle="Manage Team" />
-      <Box height="75vh">
-        <DataGrid rows={mockDataTeam} columns={columns} />
+      <Header title="TEAM" subtitle="Team Members Information" />
+
+      <Box display="flex" gap="25px" flexWrap="wrap" mt="30px">
+        {team.map((member) => (
+          <Box
+            key={member.id}
+            sx={{
+              width: "260px",
+              backgroundColor: "#374151",
+              borderRadius: "15px",
+              padding: "20px",
+              transition: "0.3s",
+              boxShadow: "0 5px 15px rgba(0,0,0,0.3)",
+
+              "&:hover": {
+                transform: "translateY(-10px)",
+              },
+            }}
+          >
+            <Box
+              component="img"
+              src={member.image}
+              alt={member.name}
+              sx={{
+                width: "80px",
+                height: "80px",
+                borderRadius: "50%",
+                objectFit: "cover",
+                mb: 2,
+              }}
+            />
+
+            <Typography
+              variant="h5"
+              color="#fff"
+              fontWeight="bold"
+              mb={1}
+            >
+              {member.name}
+            </Typography>
+
+            <Typography variant="body1" color="#d1d5db" mb={1}>
+              {member.role}
+            </Typography>
+
+            <Typography variant="body2" color="#9ca3af">
+              {member.email}
+            </Typography>
+
+            <Typography
+              variant="body2"
+              color={
+                member.access === "Leader"
+                  ? "#4ade80"
+                  : "#60a5fa"
+              }
+              mt={2}
+              fontWeight="bold"
+            >
+              {member.access}
+            </Typography>
+          </Box>
+        ))}
       </Box>
     </Box>
   );
