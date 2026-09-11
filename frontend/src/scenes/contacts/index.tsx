@@ -28,10 +28,11 @@ const Contacts: React.FC = () => {
       .catch((error) => console.log(error));
   }, []);
 
-  const filteredContacts = contacts.filter((contact) =>
-    contact.name.toLowerCase().includes(searchText.toLowerCase()) ||
-    contact.email.toLowerCase().includes(searchText.toLowerCase()) ||
-    contact.phone.includes(searchText)
+  const filteredContacts = contacts.filter(
+    (contact) =>
+      contact.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      contact.email.toLowerCase().includes(searchText.toLowerCase()) ||
+      contact.phone.includes(searchText)
   );
 
   const columns: GridColDef[] = [
