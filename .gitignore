@@ -18,6 +18,10 @@ dist/
 .env
 .env.*
 !.env.example
+backend/.env
+backend/.env.example
+frontend/.env
+frontend/.env.example
 
 # Logs
 logs/
@@ -31,3 +35,5 @@ yarn-error.log*
 Thumbs.db
 .vscode/
 .idea/
+*.sublime-workspace
+*.sublime-project
